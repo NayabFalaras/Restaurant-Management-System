@@ -1,0 +1,7 @@
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\Restaurant Management System.exe.config
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\Restaurant Management System.exe
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\Restaurant Management System.pdb
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\obj\Debug\Restaurant Management System.csproj.AssemblyReference.cache
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\obj\Debug\Restaurant Management System.csproj.CoreCompileInputs.cache
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\obj\Debug\Restaurant Management System.exe
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\obj\Debug\Restaurant Management System.pdb
