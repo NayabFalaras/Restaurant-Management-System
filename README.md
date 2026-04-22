@@ -177,14 +177,6 @@ This project demonstrates:
 
 ---
 
-# 👨‍💻 Developer Information
-
-**Name:** Nayab Falaras
-**Field:** Computer Science Student
-**Specialization:** Backend Development & Full-Stack Systems
-**GitHub:** [https://github.com/NayabFalaras](https://github.com/NayabFalaras)
-
----
 
 # ⭐ Contribution
 
