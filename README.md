@@ -1,13 +1,4 @@
-Markdown
-# 🍽️ Restaurant Management System (RMS)
-> **An Industrial-Grade POS & Operations Suite for Modern Terminal Environments**
 
-[![Language](https://img.shields.io/badge/Language-C%23-blue.svg)](https://docs.microsoft.com/en-us/dotnet/csharp/)
-[![Framework](https://img.shields.io/badge/Framework-.NET%20Framework-purple.svg)](https://dotnet.microsoft.com/)
-[![Platform](https://img.shields.io/badge/Platform-Windows-0078d7.svg)](https://www.microsoft.com/windows)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-
----
 
 # 🍽️ Restaurant Management System (RMS)
 
@@ -209,10 +200,6 @@ If you'd like to improve this project:
 
 ---
 
-# 📄 License
 
-This project is licensed under the **MIT License**.
-
----
 
 > ⭐ If you found this project helpful, consider starring the repository on GitHub.
