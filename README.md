@@ -1,48 +1,91 @@
+Markdown
 # 🍽️ Restaurant Management System (RMS)
-> **A Comprehensive POS & Operations Suite for Modern Terminal Environments**
+> **An Industrial-Grade POS & Operations Suite for Modern Terminal Environments**
 
 [![Language](https://img.shields.io/badge/Language-C%23-blue.svg)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Framework](https://img.shields.io/badge/Framework-.NET%20Framework-purple.svg)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078d7.svg)](https://www.microsoft.com/windows)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
 ## 📖 Project Overview
-The **Restaurant Management System** is an interactive, console-based application designed to streamline the daily operations of a food establishment. It features a robust multi-user role system and utilizes **File-Based Persistence** to ensure that all business data remains intact between sessions.
+The **Restaurant Management System** is a sophisticated, console-based terminal application designed to automate the lifecycle of food service operations. From inventory management to real-time order tracking, this system bridges the gap between administrative oversight and customer satisfaction.
 
-Developed with a focus on clean logic and user experience, this tool serves as a complete Point of Sale (POS) solution for small to medium-scale restaurants.
-
----
-
-## 🌟 Key Features
-
-### 👤 Role-Based Portals
-* **Admin Panel:** Full control over the establishment. Manage the menu catalog (Add/Remove items), oversee staff records, and analyze customer feedback.
-* **Staff Portal:** Operational hub for employees. Monitor active orders, update live order statuses (Pending → Preparing → Served), and view total sales reports.
-* **Customer Panel:** A seamless user interface for diners to browse the digital menu, manage a virtual cart, place orders, and track their preparation status in real-time.
-
-### 💾 Technical Excellence
-* **Advanced File Handling:** Implements `System.IO` for persistent data management. All transactions, menu updates, and user credentials are saved in structured `.txt` files (CSV format).
-* **Interactive UI:** Features a custom ASCII branding header and clear navigational menus to enhance the terminal experience.
-* **Data Integrity:** Includes robust input validation and error handling to ensure the application remains stable during incorrect user inputs.
+Built using **C#** and **.NET**, it focuses on clean architectural logic, secure user authentication, and persistent data storage via flat-file handling.
 
 ---
 
-## 🛠️ Tech Stack
-* **Language:** C# 10.0 / .NET Framework
-* **Data Management:** Flat-file system (File Handling)
-* **IDE:** Visual Studio 2022
-* **Deployment:** Docker-ready (Dockerfile included)
+## 🌟 Premium Features
+
+### 👤 Advanced Multi-Role Management
+* **Administrator Portal:** High-level access to manage the global menu, audit staff activities, and review customer feedback logs.
+* **Staff Operations Hub:** Real-time dashboard for order fulfillment. Staff can transition order states (Pending ➔ Preparing ➔ Served) and generate sales reports.
+* **Customer Experience Suite:** Intuitive digital menu interface with multi-item cart logic and automated bill generation.
+
+### ⚙️ Core Technical Capabilities
+* **Persistent Data Layer:** Utilizes advanced File I/O stream operations to manage `menu.txt`, `orders.txt`, and `users.txt` without data loss.
+* **ASCII UI Engine:** A bespoke terminal interface that uses high-contrast typography for professional visual aesthetics.
+* **Validation Logic:** Integrated error-handling middleware to sanitize user inputs and prevent runtime crashes.
 
 ---
 
-## 📂 Repository Structure
+## 🛠️ Tech Stack & Engineering
+* **Core Engine:** C# 10.0 / .NET Framework 4.7.2+
+* **Storage Architecture:** Flat-file Persistent Database (CSV Structured)
+* **Deployment:** Dockerized Environment (Dockerfile included)
+* **Design Pattern:** Helper-Static UI Patterns & List-based Memory Management
+
+---
+
+## 📂 Repository Architecture
 ```bash
 ├── Restaurant Management System/
-│   ├── Program.cs          # Core Business Logic & UI
-│   ├── menu.txt            # Menu Data Storage
-│   ├── users.txt           # Secure User Credentials
-│   ├── orders.txt          # Transactional History
-│   ├── feedback.txt        # Customer Reviews
-│   └── Dockerfile          # Container Configuration
-└── README.md               # Documentation
+│   ├── Program.cs           # Main Application Engine
+│   ├── menu.txt             # Menu Catalog Logic
+│   ├── users.txt            # Secure User Credentials
+│   ├── orders.txt           # Transactional Ledger
+│   ├── feedback.txt         # Customer Sentiment Analysis
+│   └── Dockerfile           # Containerization Script
+└── README.md                # System Documentation
+🛡️ Security & Integrity
+Input Sanitization: Prevents illegal character injection into flat files.
+
+Access Control: Strict role-based credential verification for Staff and Admin tiers.
+
+State Management: Transactional integrity ensuring orders are not lost during power-down.
+
+🚀 Installation & Deployment
+Prerequisites
+Windows OS: 7/10/11
+
+IDE: Visual Studio 2022
+
+Runtime: .NET Framework Runtime
+
+Execution Steps
+Clone the Environment:
+
+Bash
+git clone [https://github.com/NayabFalaras/Restaurant-Management-System.git](https://github.com/NayabFalaras/Restaurant-Management-System.git)
+Initialize Solution:
+Open the .sln file in Visual Studio.
+
+Compile & Launch:
+Execute via Ctrl + F5 to enter the Terminal Interface.
+
+🗺️ Future Roadmap
+[ ] SQL Integration: Transitioning to SQL Server for enterprise-grade scalability.
+
+[ ] GUI Overlay: Developing a modern WPF-based graphical interface.
+
+[ ] AI Sales Analytics: Implementing predictive trends for peak hour ordering based on historical logs.
+
+👨‍💻 Developed By
+Nayab Falaras
+
+Academic Focus: Computer Science Student
+
+Specialization: Full-Stack Systems & Backend Engineering
+
+GitHub: @NayabFalaras
