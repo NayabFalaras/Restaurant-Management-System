@@ -1,0 +1,3 @@
+﻿1,admin,Admin,123,03001234567
+2,staff1,Staff,456,03001112223
+3,nayab,Customer,786,03112223334

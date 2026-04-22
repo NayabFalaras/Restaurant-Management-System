@@ -1,0 +1,1 @@
+﻿Chicken,50,KG

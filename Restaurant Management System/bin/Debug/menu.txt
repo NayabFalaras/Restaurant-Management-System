@@ -1,2 +1,2 @@
-2,karahi,2000
-3,tea,50
+1,Burger,500
+2,Pizza,1200

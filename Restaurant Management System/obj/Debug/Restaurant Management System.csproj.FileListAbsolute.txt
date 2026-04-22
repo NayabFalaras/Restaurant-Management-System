@@ -5,3 +5,8 @@ D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management 
 D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\obj\Debug\Restaurant Management System.csproj.CoreCompileInputs.cache
 D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\obj\Debug\Restaurant Management System.exe
 D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\obj\Debug\Restaurant Management System.pdb
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\inventory.txt
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\menu.txt
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\orders.txt
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\tables.txt
+D:\Users\falcon\source\repos\Restaurant Management System\Restaurant Management System\bin\Debug\users.txt

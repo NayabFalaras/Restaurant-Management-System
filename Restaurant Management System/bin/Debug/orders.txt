@@ -1,7 +1,1 @@
-New Order
-Total:0
-----------------
-New Order
-karahi,1
-Total:2000
-----------------
+1,2400,Preparing,nayab,035567,khaura

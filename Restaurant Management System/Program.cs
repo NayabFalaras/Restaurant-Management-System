@@ -9,43 +9,63 @@ namespace RestaurantSystem
     {
         static List<MenuItem> menu = new List<MenuItem>();
         static List<Order> orders = new List<Order>();
-
         static int orderCounter = 1;
 
         static string menuFile = "menu.txt";
         static string orderFile = "orders.txt";
         static string feedbackFile = "feedback.txt";
         static string staffFile = "staff.txt";
+        static string userFile = "users.txt";
 
         static void Main(string[] args)
         {
+            Console.Title = "Restaurant Management System";
             LoadData();
             SeedMenu();
 
             while (true)
             {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("======================================");
-                Console.WriteLine("      🍽️  RESTAURANT MANAGEMENT      ");
-                Console.WriteLine("======================================");
-                Console.ResetColor();
-
-                Console.WriteLine("1. Admin Login");
-                Console.WriteLine("2. Staff Login");
-                Console.WriteLine("3. Customer Panel");
-                Console.WriteLine("4. Exit");
-                Console.WriteLine("--------------------------------------");
-                Console.Write("Select Option: ");
+                UI.Header("MAIN NAVIGATION");
+                Console.WriteLine("\n\t [1] Admin Portal");
+                Console.WriteLine("\t [2] Staff Portal");
+                Console.WriteLine("\t [3] Customer Panel");
+                Console.WriteLine("\t [4] Exit System");
+                UI.Line();
+                Console.Write("\t Select Choice: ");
 
                 int choice = GetInt();
-
                 if (choice == 1) AdminPanel();
                 else if (choice == 2) StaffPanel();
-                else if (choice == 3) CustomerPanel();
+                else if (choice == 3) CustomerAuth();
                 else if (choice == 4) break;
             }
         }
+
+        #region UI_HELPER
+        static class UI
+        {
+            public static void Header(string title)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                // Updated branding to RESTAURANT MANAGEMENT
+                Console.WriteLine(@"
+   █▀█ █▀▀ █▀ ▀█▀ ▄▀█ █░█ █▀█ ▄▀█ █▄░█ ▀█▀   █▀▄▀█ ▄▀█ █▄░█ ▄▀█ █▀▀ █▀▀ █▀▄▀█ █▀▀ █▄░█ ▀█▀
+   █▀▄ ██▄ ▄█ ░█░ █▀█ █▄█ █▀▄ █▀█ █░▀█ ░█░   █░▀░█ █▀█ █░▀█ █▀█ █▄█ ██▄ █░▀░█ ██▄ █░▀█ ░█░");
+                Console.WriteLine("\t===============================================================================");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"\t   >> {title} <<");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("\t===============================================================================");
+                Console.ResetColor();
+            }
+
+            public static void Line() => Console.WriteLine("\t-------------------------------------------------------------------------------");
+
+            public static void Success(string msg) { Console.ForegroundColor = ConsoleColor.Green; Console.WriteLine("\n\t✅ " + msg); Console.ResetColor(); }
+            public static void Error(string msg) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n\t❌ " + msg); Console.ResetColor(); }
+        }
+        #endregion
 
         static void LoadData()
         {
@@ -54,12 +74,8 @@ namespace RestaurantSystem
                 foreach (var line in File.ReadAllLines(menuFile))
                 {
                     var d = line.Split(',');
-                    int id;
-                    double price;
-                    if (d.Length >= 3 && int.TryParse(d[0], out id) && double.TryParse(d[2], out price))
-                    {
+                    if (d.Length >= 3 && int.TryParse(d[0], out int id) && double.TryParse(d[2], out double price))
                         menu.Add(new MenuItem(id, d[1], price));
-                    }
                 }
             }
 
@@ -68,46 +84,102 @@ namespace RestaurantSystem
                 foreach (var line in File.ReadAllLines(orderFile))
                 {
                     var d = line.Split(',');
-                    int id;
-                    double total;
-                    if (d.Length >= 3 && int.TryParse(d[0], out id) && double.TryParse(d[1], out total))
+                    if (d.Length >= 6)
                     {
-                        orders.Add(new Order { OrderId = id, Total = total, Status = d[2] });
-                        orderCounter = Math.Max(orderCounter, id + 1);
+                        orders.Add(new Order
+                        {
+                            OrderId = int.Parse(d[0]),
+                            Total = double.Parse(d[1]),
+                            Status = d[2],
+                            CustomerName = d[3],
+                            CustomerPhone = d[4],
+                            DeliveryAddress = d[5]
+                        });
+                        orderCounter = Math.Max(orderCounter, int.Parse(d[0]) + 1);
                     }
                 }
             }
         }
 
         static void SaveMenu() => File.WriteAllLines(menuFile, menu.Select(m => $"{m.Id},{m.Name},{m.Price}"));
-        static void SaveOrders() => File.WriteAllLines(orderFile, orders.Select(o => $"{o.OrderId},{o.Total},{o.Status}"));
+        static void SaveOrders() => File.WriteAllLines(orderFile, orders.Select(o => $"{o.OrderId},{o.Total},{o.Status},{o.CustomerName},{o.CustomerPhone},{o.DeliveryAddress}"));
+
+        static void CustomerAuth()
+        {
+            UI.Header("CUSTOMER ACCESS");
+            Console.WriteLine("\n\t [1] Login");
+            Console.WriteLine("\t [2] Register New Account");
+            Console.WriteLine("\t [3] Return Home");
+            int ch = GetInt();
+            if (ch == 1) { if (CustomerLogin()) CustomerPanel(); }
+            else if (ch == 2) CustomerRegister();
+        }
+
+        static void CustomerRegister()
+        {
+            UI.Header("ACCOUNT REGISTRATION");
+            Console.Write("\tEnter ID: "); string id = Console.ReadLine();
+            Console.Write("\tEnter Username: "); string user = Console.ReadLine();
+            Console.Write("\tEnter Password: "); string pass = Console.ReadLine();
+            Console.Write("\tEnter Phone: "); string phone = Console.ReadLine();
+
+            if (!string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass))
+            {
+                File.AppendAllText(userFile, $"{id},{user},Customer,{pass},{phone}\n");
+                UI.Success("Registration Successful! Please login.");
+            }
+            else UI.Error("Invalid Input.");
+            Pause();
+        }
+
+        static bool CustomerLogin()
+        {
+            UI.Header("CUSTOMER LOGIN");
+            Console.Write("\tUsername: "); string user = Console.ReadLine();
+            Console.Write("\tPassword: "); string pass = Console.ReadLine();
+
+            if (File.Exists(userFile))
+            {
+                var users = File.ReadAllLines(userFile);
+                foreach (var line in users)
+                {
+                    var d = line.Split(',');
+                    if (d.Length >= 4 && d[1].Trim() == user && d[3].Trim() == pass) return true;
+                }
+            }
+            UI.Error("Invalid Credentials!");
+            Pause();
+            return false;
+        }
 
         static void AdminPanel()
         {
             if (!Login("admin", "1234")) return;
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine("==== ADMIN PANEL ====");
-                Console.WriteLine("1. Add Item\n2. View Menu\n3. Delete Item\n4. Manage Staff\n5. View Feedback\n6. Back");
+                UI.Header("ADMINISTRATOR PANEL");
+                Console.WriteLine("\t[1] Add New Item\t[2] View Menu Card");
+                Console.WriteLine("\t[3] Remove Item\t\t[4] Manage Staff");
+                Console.WriteLine("\t[5] View Feedback\t[6] Logout");
+                UI.Line();
                 int ch = GetInt();
                 if (ch == 1)
                 {
-                    Console.Write("ID: "); int id = GetInt();
-                    if (menu.Any(x => x.Id == id)) { Console.WriteLine("❌ ID exists!"); Pause(); continue; }
-                    Console.Write("Name: "); string name = Console.ReadLine();
-                    Console.Write("Price: "); double price = GetDouble();
+                    Console.Write("\tItem ID: "); int id = GetInt();
+                    if (menu.Any(x => x.Id == id)) { UI.Error("ID already exists!"); Pause(); continue; }
+                    Console.Write("\tItem Name: "); string name = Console.ReadLine();
+                    Console.Write("\tItem Price: "); double price = GetDouble();
                     menu.Add(new MenuItem(id, name, price));
                     SaveMenu();
-                    Console.WriteLine("✅ Item Added!"); Pause();
+                    UI.Success("Item added to catalog."); Pause();
                 }
                 else if (ch == 2) { ShowMenu(); Pause(); }
                 else if (ch == 3)
                 {
-                    Console.Write("Enter ID to Delete: "); int id = GetInt();
+                    Console.Write("\tID to Delete: "); int id = GetInt();
                     menu.RemoveAll(x => x.Id == id);
                     SaveMenu();
-                    Console.WriteLine("✅ Deleted!"); Pause();
+                    UI.Success("Item removed."); Pause();
                 }
                 else if (ch == 4) ManageStaff();
                 else if (ch == 5) ViewFeedback();
@@ -120,9 +192,11 @@ namespace RestaurantSystem
             if (!Login("staff", "1234")) return;
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine("==== STAFF PANEL ====");
-                Console.WriteLine("1. View Orders\n2. Update Order Status\n3. Search Order\n4. Total Sales\n5. Back");
+                UI.Header("STAFF OPERATIONS");
+                Console.WriteLine("\t[1] Active Orders\t[2] Update Status");
+                Console.WriteLine("\t[3] Search Order\t[4] Sales Report");
+                Console.WriteLine("\t[5] Logout");
+                UI.Line();
                 int ch = GetInt();
                 if (ch == 1) ViewOrders();
                 else if (ch == 2) UpdateStatus();
@@ -132,276 +206,187 @@ namespace RestaurantSystem
             }
         }
 
-        // ================= UPDATED CUSTOMER PANEL WITH STATUS OPTION =================
         static void CustomerPanel()
         {
             while (true)
             {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("==== CUSTOMER PANEL ====");
-                Console.ResetColor();
-                Console.WriteLine("1. View Menu");
-                Console.WriteLine("2. Place Order");
-                Console.WriteLine("3. Track Order Status"); // Naya Option
-                Console.WriteLine("4. Give Feedback");
-                Console.WriteLine("5. Back");
+                UI.Header("CUSTOMER DASHBOARD");
+                Console.WriteLine("\t[1] Browse Menu Card");
+                Console.WriteLine("\t[2] Place New Order");
+                Console.WriteLine("\t[3] Track My Order");
+                Console.WriteLine("\t[4] Send Feedback");
+                Console.WriteLine("\t[5] Sign Out");
+                UI.Line();
                 int ch = GetInt();
                 if (ch == 1) { ShowMenu(); Pause(); }
                 else if (ch == 2) PlaceOrder();
-                else if (ch == 3) TrackOrderStatus(); // Naya function call
+                else if (ch == 3) TrackOrderStatus();
                 else if (ch == 4) GiveFeedback();
                 else break;
             }
         }
 
-        static void TrackOrderStatus()
+        static void ShowMenu()
         {
-            Console.Clear();
-            Console.Write("Enter your Order ID: ");
-            int id = GetInt();
-            var order = orders.FirstOrDefault(x => x.OrderId == id);
-
-            if (order != null)
+            Console.WriteLine("\n\t┌──────┬─────────────────┬──────────┐");
+            Console.WriteLine("\t│  ID  │    ITEM NAME    │  PRICE   │");
+            Console.WriteLine("\t├──────┼─────────────────┼──────────┤");
+            foreach (var i in menu)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("\n----------------------------");
-                Console.WriteLine($"Order ID: {order.OrderId}");
-                Console.WriteLine($"Current Status: {order.Status}");
-                Console.WriteLine("----------------------------");
-                Console.ResetColor();
+                Console.WriteLine("\t│ {0,-4} │ {1,-15} │ Rs.{2,-5} │", i.Id, i.Name, i.Price);
             }
+            Console.WriteLine("\t└──────┴─────────────────┴──────────┘");
+        }
+
+        static void ViewOrders()
+        {
+            UI.Header("ORDER MONITORING");
+            if (orders.Count == 0) UI.Error("No records found.");
             else
             {
-                Console.WriteLine("❌ Order ID not found!");
+                foreach (var o in orders)
+                {
+                    Console.ForegroundColor = o.Status == "Served" ? ConsoleColor.Green : ConsoleColor.Yellow;
+                    Console.WriteLine($"\tID: {o.OrderId} | {o.Status} | Bill: Rs.{o.Total}");
+                    Console.ResetColor();
+                    Console.WriteLine($"\tCustomer: {o.CustomerName} ({o.CustomerPhone})");
+                    Console.WriteLine($"\tAddress : {o.DeliveryAddress}");
+                    UI.Line();
+                }
             }
             Pause();
         }
 
         static void PlaceOrder()
         {
-            Console.Clear();
+            UI.Header("CREATE NEW ORDER");
             ShowMenu();
-
-            var currentCart = new List<(MenuItem Item, int Qty)>();
-            double billTotal = 0;
+            var cart = new List<(MenuItem Item, int Qty)>();
+            double total = 0;
 
             while (true)
             {
-                Console.WriteLine("\n--- Add Items to Cart ---");
-                Console.Write("Enter Product ID (or 0 to Finish Order): ");
+                Console.Write("\n\tEnter Product ID (0 to finish): ");
                 int pid = GetInt();
                 if (pid == 0) break;
-
                 var item = menu.FirstOrDefault(x => x.Id == pid);
-                if (item == null)
-                {
-                    Console.WriteLine("❌ Invalid Product ID! Try again.");
-                    continue;
-                }
+                if (item == null) { UI.Error("Not found!"); continue; }
 
-                Console.Write($"Enter Quantity for {item.Name}: ");
+                Console.Write($"\tQty for {item.Name}: ");
                 int qty = GetInt();
-                if (qty <= 0)
+                if (qty <= 0) continue;
+
+                cart.Add((item, qty));
+                total += (item.Price * qty);
+                UI.Success($"{item.Name} added.");
+            }
+
+            if (cart.Count > 0)
+            {
+                Console.Write("\n\tYour Name: "); string name = Console.ReadLine();
+                Console.Write("\tPhone Number: "); string phone = Console.ReadLine();
+                Console.Write("\tAddress: "); string addr = Console.ReadLine();
+
+                Order newOrder = new Order
                 {
-                    Console.WriteLine("❌ Invalid Quantity!");
-                    continue;
-                }
+                    OrderId = orderCounter++,
+                    Total = total,
+                    Status = "Pending",
+                    CustomerName = name,
+                    CustomerPhone = phone,
+                    DeliveryAddress = addr
+                };
+                orders.Add(newOrder);
+                SaveOrders();
 
-                currentCart.Add((item, qty));
-                billTotal += (item.Price * qty);
-                Console.WriteLine($"🛒 Added {qty}x {item.Name} to cart.");
+                UI.Header("ORDER RECEIPT");
+                Console.WriteLine($"\tOrder ID  : {newOrder.OrderId}");
+                Console.WriteLine($"\tCustomer  : {name}");
+                UI.Line();
+                foreach (var c in cart) Console.WriteLine($"\t{c.Item.Name,-15} x{c.Qty} = Rs.{c.Item.Price * c.Qty}");
+                UI.Line();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"\tGRAND TOTAL: Rs.{total}");
+                Console.ResetColor();
+                UI.Success("Order placed successfully!");
             }
-
-            if (currentCart.Count == 0)
-            {
-                Console.WriteLine("No items selected. Returning to menu...");
-                Pause();
-                return;
-            }
-
-            Order newOrder = new Order { OrderId = orderCounter++, Total = billTotal, Status = "Pending" };
-            orders.Add(newOrder);
-            SaveOrders();
-
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("==========================================");
-            Console.WriteLine("          🌟 OFFICIAL RECEIPT 🌟         ");
-            Console.WriteLine("==========================================");
-            Console.ResetColor();
-
-            Console.WriteLine($"Order ID  : {newOrder.OrderId}");
-            Console.WriteLine($"Date/Time : {DateTime.Now.ToString("f")}");
-            Console.WriteLine("------------------------------------------");
-            Console.WriteLine("{0,-18} {1,-7} {2,-15}", "Item Name", "Qty", "Subtotal");
-            Console.WriteLine("------------------------------------------");
-
-            foreach (var cartItem in currentCart)
-            {
-                double subtotal = cartItem.Item.Price * cartItem.Qty;
-                Console.WriteLine("{0,-18} {1,-7} Rs.{2,-15}",
-                    cartItem.Item.Name, cartItem.Qty, subtotal);
-            }
-
-            Console.WriteLine("------------------------------------------");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"GRAND TOTAL:            Rs.{newOrder.Total}");
-            Console.ResetColor();
-            Console.WriteLine("==========================================");
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine("      🙏 THANK YOU FOR ORDERING! 🙏      ");
-            Console.WriteLine("       We hope to see you again soon!     ");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("==========================================");
-            Console.ResetColor();
-
             Pause();
+        }
+
+        static void UpdateStatus()
+        {
+            Console.Write("\tOrder ID: "); int id = GetInt();
+            var order = orders.FirstOrDefault(x => x.OrderId == id);
+            if (order == null) { UI.Error("Not found!"); Pause(); return; }
+            Console.WriteLine("\t1.Pending 2.Preparing 3.Served");
+            int s = GetInt();
+            order.Status = s == 1 ? "Pending" : s == 2 ? "Preparing" : "Served";
+            SaveOrders();
+            UI.Success("Status synced."); Pause();
+        }
+
+        static bool Login(string u, string p)
+        {
+            UI.Header("SECURE ACCESS");
+            Console.Write("\tUsername: "); string user = Console.ReadLine();
+            Console.Write("\tPassword: "); string pass = Console.ReadLine();
+            if (user == u && pass == p) return true;
+            UI.Error("Access Denied!"); Pause(); return false;
         }
 
         static void ManageStaff()
         {
             while (true)
             {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("==== STAFF MANAGEMENT ====");
-                Console.ResetColor();
-                Console.WriteLine("1. Add New Staff member");
-                Console.WriteLine("2. View All Staff members");
-                Console.WriteLine("3. Remove a Staff member");
-                Console.WriteLine("4. Back");
-                Console.Write("\nChoose an option: ");
-
-                int choice = GetInt();
-
-                if (choice == 1)
+                UI.Header("STAFF DIRECTORY");
+                Console.WriteLine("\t[1] Add Staff\t[2] View All\t[3] Remove\t[4] Back");
+                int ch = GetInt();
+                if (ch == 1)
                 {
-                    Console.Write("Enter Staff Name: ");
-                    string name = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(name))
-                    {
-                        File.AppendAllText(staffFile, name + "\n");
-                        Console.WriteLine("✅ Staff Added!");
-                    }
+                    Console.Write("\tName: "); string n = Console.ReadLine();
+                    File.AppendAllText(staffFile, n + "\n"); UI.Success("Added."); Pause();
+                }
+                else if (ch == 2)
+                {
+                    if (File.Exists(staffFile)) foreach (var s in File.ReadAllLines(staffFile)) Console.WriteLine("\t- " + s);
                     Pause();
                 }
-                else if (choice == 2)
+                else if (ch == 3)
                 {
-                    Console.Clear();
-                    Console.WriteLine("--- Staff List ---");
-                    if (File.Exists(staffFile))
-                    {
-                        var staff = File.ReadAllLines(staffFile);
-                        if (staff.Length == 0) Console.WriteLine("List is empty.");
-                        else foreach (var s in staff) Console.WriteLine("- " + s);
-                    }
-                    else Console.WriteLine("No staff file found.");
-                    Pause();
-                }
-                else if (choice == 3)
-                {
-                    if (File.Exists(staffFile))
-                    {
-                        var staffList = File.ReadAllLines(staffFile).ToList();
-                        Console.Write("Enter name to remove: ");
-                        string toRemove = Console.ReadLine();
-                        if (staffList.Remove(toRemove))
-                        {
-                            File.WriteAllLines(staffFile, staffList);
-                            Console.WriteLine("✅ Removed successfully.");
-                        }
-                        else Console.WriteLine("❌ Name not found.");
-                    }
+                    var list = File.ReadAllLines(staffFile).ToList();
+                    Console.Write("\tName to remove: "); string r = Console.ReadLine();
+                    if (list.Remove(r)) { File.WriteAllLines(staffFile, list); UI.Success("Removed."); }
                     Pause();
                 }
                 else break;
             }
         }
 
-        static void ViewOrders()
+        static void TrackOrderStatus()
         {
-            Console.Clear();
-            if (orders.Count == 0) Console.WriteLine("No orders found!");
-            else foreach (var o in orders) Console.WriteLine($"ID: {o.OrderId} | Rs.{o.Total} | Status: {o.Status}");
+            Console.Write("\tOrder ID: "); int id = GetInt();
+            var o = orders.FirstOrDefault(x => x.OrderId == id);
+            if (o != null) { UI.Success($"Order Status: {o.Status}"); }
+            else UI.Error("ID not found.");
             Pause();
         }
 
-        static void UpdateStatus()
-        {
-            Console.Write("Order ID: "); int id = GetInt();
-            var order = orders.FirstOrDefault(x => x.OrderId == id);
-            if (order == null) { Console.WriteLine("❌ Not found!"); Pause(); return; }
-            Console.WriteLine("1.Pending 2.Preparing 3.Served");
-            int s = GetInt();
-            order.Status = s == 1 ? "Pending" : s == 2 ? "Preparing" : "Served";
-            SaveOrders();
-            Console.WriteLine("✅ Status Updated!"); Pause();
-        }
-
+        static void ShowSales() { UI.Success($"Total Revenue: Rs.{orders.Sum(x => x.Total)}"); Pause(); }
+        static void GiveFeedback() { Console.Write("\tFeedback: "); File.AppendAllText(feedbackFile, Console.ReadLine() + "\n"); UI.Success("Thank you!"); Pause(); }
+        static void ViewFeedback() { UI.Header("GUEST FEEDBACK"); if (File.Exists(feedbackFile)) foreach (var f in File.ReadAllLines(feedbackFile)) Console.WriteLine("\t- " + f); Pause(); }
+        static void SeedMenu() { if (menu.Count == 0) { menu.Add(new MenuItem(1, "Burger", 500)); menu.Add(new MenuItem(2, "Pizza", 1200)); SaveMenu(); } }
+        static int GetInt() { int n; while (!int.TryParse(Console.ReadLine(), out n)) Console.Write("\tEnter valid number: "); return n; }
+        static double GetDouble() { double n; while (!double.TryParse(Console.ReadLine(), out n)) Console.Write("\tEnter valid price: "); return n; }
+        static void Pause() { Console.WriteLine("\n\tPress any key to continue..."); Console.ReadKey(); }
         static void SearchOrder()
         {
-            Console.Write("Order ID: "); int id = GetInt();
+            Console.Write("\tOrder ID: "); int id = GetInt();
             var o = orders.FirstOrDefault(x => x.OrderId == id);
-            if (o != null) Console.WriteLine($"ID: {o.OrderId} | Total: Rs.{o.Total} | Status: {o.Status}");
-            else Console.WriteLine("❌ Not found!");
-            Pause();
-        }
-
-        static void ShowSales() { Console.WriteLine($"💰 Total Sales: Rs.{orders.Sum(x => x.Total)}"); Pause(); }
-
-        static void GiveFeedback()
-        {
-            Console.Write("Your Feedback: ");
-            File.AppendAllText(feedbackFile, Console.ReadLine() + "\n");
-            Console.WriteLine("✅ Thank you for your feedback!"); Pause();
-        }
-
-        static void ViewFeedback()
-        {
-            if (File.Exists(feedbackFile))
-                foreach (var f in File.ReadAllLines(feedbackFile)) Console.WriteLine("- " + f);
-            else Console.WriteLine("No feedback yet.");
-            Pause();
-        }
-
-        static bool Login(string u, string p)
-        {
-            Console.Write("Username: "); string user = Console.ReadLine();
-            Console.Write("Password: "); string pass = Console.ReadLine();
-            if (user == u && pass == p) return true;
-            Console.WriteLine("❌ Access Denied!"); Pause(); return false;
-        }
-
-        static int GetInt() { int n; while (!int.TryParse(Console.ReadLine(), out n)) Console.Write("Enter valid number: "); return n; }
-        static double GetDouble() { double n; while (!double.TryParse(Console.ReadLine(), out n)) Console.Write("Enter valid price: "); return n; }
-        static void Pause() { Console.WriteLine("\nPress any key to continue..."); Console.ReadKey(); }
-
-        static void ShowMenu()
-        {
-            Console.WriteLine("\n--- MENU CARD ---");
-            Console.WriteLine("{0,-5} {1,-15} {2,-10}", "ID", "Name", "Price");
-            foreach (var i in menu) Console.WriteLine("{0,-5} {1,-15} Rs.{2,-10}", i.Id, i.Name, i.Price);
-        }
-
-        static void SeedMenu()
-        {
-            if (menu.Count == 0)
-            {
-                menu.Add(new MenuItem(1, "Burger", 500));
-                menu.Add(new MenuItem(2, "Pizza", 1200));
-                menu.Add(new MenuItem(3, "Pasta", 800));
-                menu.Add(new MenuItem(4, "Coke", 150));
-                SaveMenu();
-            }
+            if (o != null) Console.WriteLine($"\tFound: {o.CustomerName} - Rs.{o.Total} ({o.Status})");
+            else UI.Error("No record."); Pause();
         }
     }
 
-    class MenuItem
-    {
-        public int Id; public string Name; public double Price;
-        public MenuItem(int id, string name, double price) { Id = id; Name = name; Price = price; }
-    }
-
-    class Order { public int OrderId; public double Total; public string Status = "Pending"; }
+    class MenuItem { public int Id; public string Name; public double Price; public MenuItem(int id, string name, double price) { Id = id; Name = name; Price = price; } }
+    class Order { public int OrderId; public double Total; public string Status = "Pending"; public string CustomerName; public string CustomerPhone; public string DeliveryAddress; }
 }
